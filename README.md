@@ -87,7 +87,7 @@ Cписок основных возможностей:
 ## Запуск проекта
 ```
 проект/
-├── .html      # (бывший genotek-health-ai (2).html)
+├── alica-health-ai.html
 ├── .env                # Файл с ключами
 ├── server.js           # сам сервер
 ├── package.json        # Файл зависимостей
