@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Алиса Здоровье — AI-ассистент</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+:root {
+  --red:#FC3F1D; --red-dark:#D93517; --red-light:#FFF0ED;
+  --yellow:#FFDB4D; --yellow-dark:#E6C400; --yellow-light:#FFFBE6;
+  --black:#1A1A1A; --gray-dark:#333; --gray-mid:#666; --gray-soft:#999;
+  --gray-border:#E0E0E0; --gray-bg:#F5F5F5; --white:#FFF;
+  --radius:12px; --radius-sm:8px; --shadow:0 2px 12px rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Helvetica World','Helvetica Neue',Helvetica,Arial,'Manrope',sans-serif;background:var(--gray-bg);color:var(--black);line-height:1.6;min-height:100vh;}
+nav{background:var(--white);border-bottom:1px solid var(--gray-border);padding:0 48px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-mark{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.logo-text{font-size:17px;font-weight:700;color:var(--black);} .logo-text span{color:var(--red);}
+nav ul{display:flex;gap:28px;list-style:none;}
+nav ul a{text-decoration:none;color:var(--gray-dark);font-size:14px;font-weight:500;transition:color 0.2s;}
+nav ul a:hover{color:var(--black);}
+.nav-cta{background:var(--red)!important;color:white!important;padding:8px 20px;border-radius:6px;font-weight:600!important;}
+.hero{background:var(--white);padding:64px 48px 72px;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:white;font-size:11px;font-weight:700;padding:5px 12px;border-radius:4px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.06em;}
+.hero h1{font-size:48px;line-height:1.15;color:var(--black);margin-bottom:20px;font-weight:700;letter-spacing:-0.02em;}
+.hero h1 em{font-style:normal;color:var(--red);}
+.hero p{font-size:16px;color:var(--gray-mid);margin-bottom:32px;line-height:1.7;}
+.hero-btns{display:flex;gap:12px;}
+.btn-primary{background:var(--red);color:white;border:none;padding:13px 28px;border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s,transform 0.1s;}
+.btn-primary:hover{background:var(--red-dark);transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--black);border:1.5px solid var(--gray-border);padding:13px 28px;border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-secondary:hover{border-color:var(--black);}
+.hero-chat{background:var(--white);border-radius:16px;padding:20px;border:1px solid var(--gray-border);box-shadow:var(--shadow);}
+.hero-chat-header{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--gray-border);}
+.ai-dot{width:8px;height:8px;background:#4CAF50;border-radius:50%;}
+.hero-chat-header p:first-of-type{font-size:14px;font-weight:600;color:var(--black);}
+.hero-chat-header p:last-of-type{font-size:12px;color:var(--gray-soft);}
+.hc-bubble{border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.5;margin-bottom:8px;max-width:85%;}
+.hc-ai{background:var(--gray-bg);color:var(--black);border-radius:10px 10px 10px 3px;}
+.hc-user{background:var(--red);color:white;border-radius:10px 10px 3px 10px;margin-left:auto;}
+.hc-typing{display:flex;align-items:center;gap:8px;color:var(--gray-soft);font-size:12px;}
+.typing-dots{display:flex;gap:3px;}
+.typing-dots span{width:6px;height:6px;background:var(--red);border-radius:50%;animation:bounce 1.2s infinite;opacity:0.7;}
+.typing-dots span:nth-child(2){animation-delay:0.2s;} .typing-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.stats-section{background:var(--yellow);padding:32px 48px;}
+.stats-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);}
+.stat-item{text-align:center;padding:0 32px;border-right:1px solid rgba(0,0,0,0.15);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-size:36px;font-weight:700;color:var(--black);line-height:1;margin-bottom:6px;}
+.stat-label{font-size:13px;color:var(--gray-dark);font-weight:500;}
+.section{max-width:1100px;margin:0 auto;padding:52px 48px;}
+.section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.section h2{font-size:32px;font-weight:700;margin-bottom:10px;letter-spacing:-0.01em;}
+.section-sub{font-size:15px;color:var(--gray-mid);max-width:520px;margin-bottom:36px;}
+.module-tabs{display:flex;gap:2px;background:var(--white);border:1px solid var(--gray-border);border-radius:10px;padding:4px;margin-bottom:24px;width:fit-content;}
+.tab-btn{padding:9px 18px;border:none;background:transparent;border-radius:7px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--gray-mid);transition:all 0.2s;display:flex;align-items:center;gap:7px;}
+.tab-btn.active{background:var(--black);color:white;}
+.tab-btn .tab-num{width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;background:rgba(255,255,255,0.2);}
+.tab-btn:not(.active) .tab-num{background:var(--gray-bg);color:var(--gray-mid);}
+.status-bar{background:var(--yellow-light);border:1px solid var(--yellow-dark);border-radius:var(--radius-sm);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.status-steps{display:flex;align-items:center;gap:8px;}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-dot.done{background:var(--black);color:white;} .step-dot.active{background:var(--red);color:white;} .step-dot.todo{background:var(--gray-border);color:var(--gray-soft);}
+.step-line{width:24px;height:2px;background:var(--gray-border);} .step-line.done{background:var(--black);}
+.module-panel{display:none;position:relative;} .module-panel.active{display:block;position:relative;}
+.card{background:var(--white);border:1px solid var(--gray-border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+.card-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.card-icon{width:26px;height:26px;background:var(--red-light);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.anamnez-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:20px;width: 100%; }
+.quick-symptoms{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.symptom-chip{background:var(--gray-bg);color:var(--gray-dark);border:1px solid var(--gray-border);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;font-family:inherit;}
+.symptom-chip:hover{background:var(--red);color:white;border-color:var(--red);}
+.chat-window{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.chat-window::-webkit-scrollbar{width:3px;} .chat-window::-webkit-scrollbar-thumb{background:var(--gray-border);border-radius:2px;}
+.chat-bubble{border-radius:10px;padding:10px 14px;font-size:13px;line-height:1.5;max-width:85%;}
+.chat-ai{background:var(--gray-bg);color:var(--black);border-radius:10px 10px 10px 3px;}
+.chat-user{background:var(--red);color:white;border-radius:10px 10px 3px 10px;margin-left:auto;}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;border:1.5px solid var(--gray-border);border-radius:var(--radius-sm);padding:10px 14px;font-family:inherit;font-size:13px;outline:none;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--red);}
+.chat-send{background:var(--red);border:none;border-radius:var(--radius-sm);padding:10px 16px;color:white;font-size:15px;cursor:pointer;transition:background 0.2s;min-width:44px;display:flex;align-items:center;justify-content:center;}
+.chat-send:hover{background:var(--red-dark);}
+.ai-thinking{display:flex;align-items:center;gap:8px;color:var(--gray-soft);font-size:12px;}
+.report-preview{background:var(--gray-bg);border:1px solid var(--gray-border);border-radius:var(--radius-sm);padding:14px;max-height:380px;overflow-y:auto;}
+.report-field{margin-bottom:10px;}
+.report-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray-soft);margin-bottom:4px;}
+.report-value{font-size:13px;color:var(--black);padding:8px 12px;background:var(--white);border-radius:6px;border:1px solid var(--gray-border);}
+.report-value.empty{color:var(--gray-soft);font-style:italic;border-style:dashed;}
+.ai-rec-box{background:var(--yellow-light);border:1px solid var(--yellow-dark);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;font-size:13px;color:var(--black);line-height:1.6;}
+.ai-rec-box strong{color:var(--red);}
+.specialist-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width: 100%; }
+.spec-card{background:var(--white);border:1.5px solid var(--gray-border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.2s;}
+.spec-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(252,63,29,0.1);}
+.spec-card.recommended{border-color:var(--red);background:var(--red-light);}
+.spec-emoji{font-size:28px;margin-bottom:8px;display:block;}
+.spec-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.spec-name{font-weight:700;font-size:14px;margin-bottom:2px;} .spec-specialty{font-size:12px;color:var(--gray-mid);}
+.rec-badge{background:var(--red);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;white-space:nowrap;}
+.spec-meta{display:flex;gap:10px;font-size:12px;color:var(--gray-mid);margin-bottom:8px;flex-wrap:wrap;}
+.spec-price{font-weight:700;font-size:14px;color:var(--black);margin-bottom:10px;}
+.spec-btn{width:100%;background:var(--black);color:white;border:none;border-radius:6px;padding:9px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+.spec-btn:hover{background:var(--red);} .spec-card.recommended .spec-btn{background:var(--red);} .spec-card.recommended .spec-btn:hover{background:var(--red-dark);}
+.consult-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;width: 100%; }
+.video-mock{background:#111;border-radius:var(--radius);aspect-ratio:16/10;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:14px;}
+.video-avatar{width:70px;height:70px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:10px;}
+.video-name{color:rgba(255,255,255,0.75);font-size:13px;font-weight:600;}
+.video-badge{position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:5px;background:rgba(220,40,40,0.9);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;}
+.rec-dot{width:7px;height:7px;background:white;border-radius:50%;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.video-self{position:absolute;bottom:10px;right:10px;width:80px;height:54px;background:rgba(252,63,29,0.6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid rgba(255,255,255,0.2);}
+.controls-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
+.ctrl-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--gray-border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;transition:all 0.15s;}
+.ctrl-btn:hover{border-color:var(--red);background:var(--red-light);}
+.ctrl-btn.end{background:#E8403C;border-color:#E8403C;color:white;width:50px;height:50px;}
+.transcript-box{background:var(--gray-bg);border:1px solid var(--gray-border);border-radius:var(--radius-sm);padding:14px;height:200px;overflow-y:auto;font-size:12px;line-height:1.7;}
+.transcript-line{margin-bottom:10px;}
+.transcript-speaker{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.transcript-speaker.doctor{color:var(--red);} .transcript-speaker.patient{color:var(--gray-dark);}
+.transcript-text{color:var(--gray-dark);}
+.transcribing-indicator{display:flex;align-items:center;gap:8px;background:var(--red-light);border:1px solid var(--red);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--red-dark);font-weight:600;margin-bottom:10px;}
+.pulse-dot{width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.6}}
+.recs-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;width: 100%; }
+.med-card{background:var(--gray-bg);border:1px solid var(--gray-border);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;}
+.med-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.med-name{font-weight:700;font-size:14px;} .med-type{font-size:11px;color:var(--gray-soft);}
+.med-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.med-badge.supplement{background:var(--yellow-light);color:#7a5c00;} .med-badge.prescription{background:var(--red-light);color:var(--red-dark);}
+.schedule-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.schedule-pill{background:var(--white);border:1px solid var(--gray-border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--gray-dark);}
+.ai-insight{background:var(--yellow-light);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--gray-dark);display:flex;gap:7px;align-items:flex-start;margin-top:8px;border-left:3px solid var(--yellow-dark);}
+.ai-insight .spark{flex-shrink:0;}
+.download-btn{width:100%;background:var(--black);color:white;border:none;border-radius:var(--radius-sm);padding:13px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;transition:background 0.2s;}
+.download-btn:hover{background:var(--red);}
+.spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading .spinner{display:inline-block;} .loading .send-icon{display:none;}
+.ai-recs-output{background:var(--yellow-light);border:1px solid var(--yellow-dark);border-radius:var(--radius-sm);padding:14px 16px;font-size:13px;line-height:1.7;color:var(--black);min-height:60px;white-space:pre-line;}
+footer{background:var(--white);border-top:1px solid var(--gray-border);padding:36px 48px;text-align:center;color:var(--gray-soft);font-size:13px;margin-top:40px;}
+footer .footer-logo{font-size:18px;font-weight:700;color:var(--black);margin-bottom:6px;}
+footer .footer-logo span{color:var(--red);}
+/* МКБ-10 бейдж */
+.icd-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red-light);color:var(--red-dark);border:1px solid var(--red);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;margin-top:6px;}
+/* ПЕЧАТЬ / PDF */
+@media print {
+  body * { visibility: hidden; }
+  #report-025u, #report-025u * { visibility: visible; }
+  #report-025u {
+    position: fixed; top: 0; left: 0;
+    width: 100%; padding: 30px;
+    font-family: 'Times New Roman', serif;
+    font-size: 13px;
+    background: white;
+    color: black;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+  #report-025u .report-preview {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  #report-025u .report-label { font-weight: bold; text-transform: none; font-size: 11px; letter-spacing: 0; }
+  #report-025u .report-value { border: 1px solid #999; border-radius: 0; background: white; }
+  nav, footer, .stats-section, .hero, .module-tabs, .status-bar, .section-label, .section h2, .section-sub, .download-btn { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50,88.9 C22,63 8,43 8,26.5 C8,13.5 18,3.5 31,3.5 C38.6,3.5 45.8,7 50,13 C54.2,7 61.4,3.5 69,3.5 C82,3.5 92,13.5 92,26.5 C92,43 78,63 50,88.9 Z" fill="var(--red)"/>
+        <g transform="translate(68, 25)">
+          <rect x="-3" y="-11" width="6" height="22" rx="2" fill="white"/>
+          <rect x="-11" y="-3" width="22" height="6" rx="2" fill="white"/>
+        </g>
+      </svg>
+    </div>
+    <span class="logo-text">Алиса <span>Здоровье</span></span>
+  </a>
+  <ul>
+    <li><a href="#">Консультации</a></li>
+    <li><a href="#">Специалисты</a></li>
+    <li><a href="#">Как работает</a></li>
+    <li><a href="#" class="nav-cta">Войти</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">✦ На базе Алисы AI · Yandex</div>
+      <h1>Медицина<br>нового <em>времени</em></h1>
+      <p>ИИ-ассистент собирает анамнез, подбирает врача и автоматически формирует медицинский отчёт после консультации.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="scrollToModules()">Начать консультацию</button>
+        <button class="btn-secondary">Как это работает</button>
+      </div>
+    </div>
+    <div class="hero-chat">
+      <div class="hero-chat-header">
+        <div class="ai-dot"></div>
+        <div><p>Алиса — медицинский ИИ</p><p>онлайн · отвечает мгновенно</p></div>
+      </div>
+      <div class="hc-bubble hc-ai">Здравствуйте! Расскажите, что вас беспокоит?</div>
+      <div class="hc-bubble hc-user">Сыпь и температура уже 3 дня</div>
+      <div class="hc-bubble hc-ai">Понял. Сыпь красная, мелкая, чешется?</div>
+      <div class="hc-bubble hc-user">Да, именно так</div>
+      <div class="hc-typing"><div class="typing-dots"><span></span><span></span><span></span></div> Алиса анализирует симптомы...</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-num">94%</div><div class="stat-label">точность определения специалиста</div></div>
+    <div class="stat-item"><div class="stat-num">7 мин</div><div class="stat-label">среднее время сбора анамнеза</div></div>
+    <div class="stat-item"><div class="stat-num">авто</div><div class="stat-label">формирование медицинского отчёта</div></div>
+  </div>
+</div>
+
+<section class="section" id="modules">
+  <div class="section-label">Как работает сервис</div>
+  <h2>Четыре шага к здоровью</h2>
+  <p class="section-sub">ИИ сопровождает вас от первого симптома до готовых рекомендаций врача.</p>
+
+  <div class="status-bar">
+    <div class="status-steps">
+      <div class="step-dot active" id="sd1">1</div><div class="step-line" id="sl1"></div>
+      <div class="step-dot todo" id="sd2">2</div><div class="step-line" id="sl2"></div>
+      <div class="step-dot todo" id="sd3">3</div><div class="step-line" id="sl3"></div>
+      <div class="step-dot todo" id="sd4">4</div>
+    </div>
+    <div style="font-size:13px;color:var(--gray-mid);">
+      <strong style="color:var(--red)" id="current-step-label">Сбор анамнеза</strong>
+    </div>
+  </div>
+
+  <div class="module-tabs">
+    <button class="tab-btn active" onclick="showModule(1)"><span class="tab-num">1</span> Анамнез</button>
+    <button class="tab-btn" onclick="showModule(2)"><span class="tab-num">2</span> Специалист</button>
+    <button class="tab-btn" onclick="showModule(3)"><span class="tab-num">3</span> Консультация</button>
+    <button class="tab-btn" onclick="showModule(4)"><span class="tab-num">4</span> Рекомендации</button>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="module-panel active" id="module-1">
+    <div class="anamnez-layout">
+      <div>
+        <div class="card">
+          <div class="card-title"><div class="card-icon">🤖</div> ИИ-ассистент Алиса</div>
+          <div class="quick-symptoms">
+            <button class="symptom-chip" onclick="addSymptom('Головная боль')">Головная боль</button>
+            <button class="symptom-chip" onclick="addSymptom('Усталость')">Усталость</button>
+            <button class="symptom-chip" onclick="addSymptom('Боль в спине')">Боль в спине</button>
+            <button class="symptom-chip" onclick="addSymptom('Выпадение волос')">Выпадение волос</button>
+            <button class="symptom-chip" onclick="addSymptom('Сыпь на коже')">Сыпь на коже</button>
+            <button class="symptom-chip" onclick="addSymptom('Нарушение сна')">Нарушение сна</button>
+          </div>
+          <div class="chat-window" id="chat-window">
+            <div class="chat-bubble chat-ai">Здравствуйте! Я Алиса, медицинский ИИ-ассистент. Расскажите, что вас беспокоит?</div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="user-input" placeholder="Опишите симптомы..." onkeydown="if(event.key==='Enter') sendMessage()">
+            <button class="chat-send" onclick="sendMessage()" id="send-btn">
+              <span class="send-icon">➤</span><span class="spinner"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title"><div class="card-icon">📋</div> Формируемый анамнез</div>
+          <div class="report-preview">
+            <div class="report-field"><div class="report-label">Жалобы пациента</div><div class="report-value empty" id="rf-complaints">ожидаем ввода...</div></div>
+            <div class="report-field"><div class="report-label">Анамнез заболевания</div><div class="report-value empty" id="rf-history">не заполнено</div></div>
+            <div class="report-field"><div class="report-label">Продолжительность</div><div class="report-value empty" id="rf-duration">не заполнено</div></div>
+            <div class="report-field"><div class="report-label">Сопутствующие симптомы</div><div class="report-value empty" id="rf-additional">не заполнено</div></div>
+            <div class="report-field"><div class="report-label">Аллергии</div><div class="report-value empty" id="rf-allergies">не заполнено</div></div>
+            <div class="report-field"><div class="report-label">Направление к специалисту</div><div class="report-value empty" id="rf-area">определяется...</div></div>
+            <div class="report-field"><div class="report-label">Предварительный диагноз МКБ-10</div><div class="report-value empty" id="rf-icd10">определяется...</div></div>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:14px;" onclick="goToSpecialist()">Перейти к выбору специалиста →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="module-panel" id="module-2">
+    <div class="ai-rec-box" id="ai-rec-text">Заполните анамнез на первом шаге — Алиса подберёт подходящего специалиста.</div>
+    <div id="specialists-loading" style="display:none;text-align:center;padding:40px;color:var(--gray-mid);font-size:14px;">
+      <div class="typing-dots" style="justify-content:center;margin-bottom:8px;"><span></span><span></span><span></span></div>
+      Алиса подбирает специалистов на prodoctorov.ru...
+    </div>
+    <div class="specialist-grid" id="specialist-grid"></div>
+    <button class="btn-primary" style="margin-top:20px;" onclick="showModule(3)">Перейти к консультации →</button>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div class="module-panel" id="module-3">
+    <div class="consult-layout">
+      <div>
+        <div class="card">
+          <div class="card-title"><div class="card-icon">📹</div> Видеоконсультация</div>
+          <div class="video-mock">
+            <div class="video-badge"><div class="rec-dot"></div> ЗАПИСЬ</div>
+            <div class="video-avatar">👩‍⚕️</div>
+            <div class="video-name">Врач-терапевт Анна Сергеевна</div>
+            <div class="video-self">😊</div>
+          </div>
+          <div class="controls-row">
+            <button class="ctrl-btn">🎙️</button>
+            <button class="ctrl-btn">📷</button>
+            <button class="ctrl-btn end">📵</button>
+            <button class="ctrl-btn">💬</button>
+          </div>
+          <div style="background:var(--red-light);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--red-dark);text-align:center;font-weight:600;">
+            🎙️ Консультация записывается · Алиса формирует транскрипт в реальном времени
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title"><div class="card-icon">📝</div> Транскрипт · Live</div>
+          <div id="transcribing-indicator" class="transcribing-indicator" style="display:none;">
+            <div class="pulse-dot"></div> Алиса распознаёт речь и заполняет отчёт...
+          </div>
+          <div class="transcript-box" id="transcript-box">
+            <div class="transcript-line">
+              <div class="transcript-speaker doctor">Врач</div>
+              <div class="transcript-text">Добрый день! Изучила ваш анамнез. Расскажите подробнее про симптомы.</div>
+            </div>
+            <div class="transcript-line">
+              <div class="transcript-speaker patient">Пациент</div>
+              <div class="transcript-text" id="patient-transcript-text">—</div>
+            </div>
+            <div class="transcript-line">
+              <div class="transcript-speaker doctor">Врач</div>
+              <div class="transcript-text">Есть ли связь с физической нагрузкой или стрессом?</div>
+            </div>
+            <div class="transcript-line">
+              <div class="transcript-speaker patient">Пациент</div>
+              <div class="transcript-text">Да, работа стрессовая, сплю плохо.</div>
+            </div>
+            <div class="transcript-line">
+              <div class="transcript-speaker doctor">Врач</div>
+              <div class="transcript-text" id="doctor-prescription-text">Рекомендую Магне B6 курсом 30 дней и мелатонин 3 мг на ночь. Сдайте анализы на магний и витамин D.</div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:12px;" onclick="parseConsultation()">
+            🤖 Алиса, сформируй отчёт из транскрипта →
+          </button>
+          <div style="margin-top:12px;border:2px dashed var(--gray-border);border-radius:var(--radius-sm);padding:16px;text-align:center;transition:border-color 0.2s;"
+               id="audio-drop-zone"
+               ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+               ondragleave="this.style.borderColor='var(--gray-border)'"
+               ondrop="handleAudioDrop(event)">
+            <div style="font-size:24px;margin-bottom:6px;">🎙️</div>
+            <div style="font-size:13px;font-weight:600;color:var(--black);margin-bottom:4px;">Загрузите запись консультации</div>
+            <div style="font-size:12px;color:var(--gray-soft);margin-bottom:12px;">Перетащите файл или нажмите кнопку · OGG, MP3, WAV</div>
+            <label style="cursor:pointer;">
+              <input type="file" id="audio-file-input" accept=".ogg,.mp3,.wav,.opus" style="display:none;" onchange="handleAudioFile(this.files[0])">
+              <span style="background:var(--black);color:white;padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;font-family:inherit;">Выбрать файл</span>
+            </label>
+          </div>
+          <div id="stt-status" style="display:none;margin-top:10px;background:var(--red-light);border:1px solid var(--red);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--red-dark);font-weight:600;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="pulse-dot"></div>
+              <span id="stt-status-text">Алиса распознаёт речь...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 4 -->
+  <div class="module-panel" id="module-4">
+    <div class="recs-layout">
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title"><div class="card-icon">💊</div> Назначения врача</div>
+          <div id="medications-container"><div style="color:var(--gray-soft);font-size:13px;font-style:italic;">Ожидаем завершения консультации...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="card-icon">🔬</div> Назначенные исследования</div>
+          <div id="tests-container"><div style="color:var(--gray-soft);font-size:13px;font-style:italic;">Ожидаем отчёт...</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title"><div class="card-icon">📄</div> Медицинский отчёт (ф. 025/у)</div>
+          <div class="report-preview" id="report-025u">
+            <div style="text-align:center;font-weight:700;font-size:13px;margin-bottom:12px;border-bottom:1px solid var(--gray-border);padding-bottom:8px;">
+              стр. 3 ф. № 025/у · Запись врача-специалиста
+            </div>
+            <div class="report-field">
+              <div class="report-label">Дата осмотра</div>
+              <div class="report-value" id="rep-date" style="color:var(--black)"></div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Врач (специальность)</div>
+              <div class="report-value" id="rep-doctor" style="color:var(--black)"></div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Жалобы пациента</div>
+              <div class="report-value empty" id="rep-complaints">ожидаем отчёт...</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Анамнез заболевания, жизни</div>
+              <div class="report-value empty" id="rep-anamnez">не заполнено</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Объективные данные</div>
+              <div class="report-value empty" id="rep-objective">не заполнено</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Диагноз основного заболевания (код МКБ-10)</div>
+              <div class="report-value empty" id="rep-diagnosis">не определён</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Сопутствующие заболевания (код МКБ-10)</div>
+              <div class="report-value empty" id="rep-comorbidity">не выявлено</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Назначения (лекарственные препараты, физиотерапия)</div>
+              <div class="report-value empty" id="rep-prescriptions" style="white-space:pre-line;">не заполнено</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Назначения (исследования, консультации)</div>
+              <div class="report-value empty" id="rep-tests">не заполнено</div>
+            </div>
+            <div class="report-field">
+              <div class="report-label">Группа здоровья / Диспансерное наблюдение</div>
+              <div class="report-value empty" id="rep-health-group">не определено</div>
+            </div>
+            <div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--gray-border);font-size:12px;color:var(--gray-soft);">
+              Врач: ______________________ &nbsp;&nbsp; Подпись: ______________________
+            </div>
+          </div>
+          <button class="download-btn" onclick="downloadReport()">📥 Экспорт в PDF (ф. 025/у)</button>
+        </div>
+        <div class="card" style="background:var(--yellow-light);border-color:var(--yellow-dark);">
+          <div class="card-title"><div class="card-icon">🤖</div> Рекомендации Алисы по отчёту</div>
+          <div id="alice-recs-output" class="ai-recs-output" style="color:var(--gray-soft);font-style:italic;">Рекомендации появятся после формирования отчёта...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Алиса <span>Здоровье</span></div>
+  <p>Прототип AI-ассистента · Powered by Алиса AI (Yandex AI Studio)</p>
+  <p style="margin-top:6px;font-size:11px;">Информация носит ознакомительный характер. Не заменяет консультацию врача.</p>
+</footer>
+
+<script>
+const FOLDER_ID = 'b1ge7vsop6i86ig0l419';
+let conversationHistory = [];
+let anamnezData = { complaints:'', history:'', duration:'', additional:'', allergies:'', area:'' };
+let medicalReport = {};
+
+const SPECIALISTS_DB = {
+  'терапевт':[{name:'Иванова Марина Сергеевна',rating:'4.9',exp:'14 лет',price:'1 800',reviews:127,emoji:'👩‍⚕️'},{name:'Петров Алексей Николаевич',rating:'4.8',exp:'9 лет',price:'1 500',reviews:89,emoji:'👨‍⚕️'}],
+  'дерматолог':[{name:'Смирнова Екатерина Игоревна',rating:'4.9',exp:'11 лет',price:'2 100',reviews:203,emoji:'👩‍⚕️'},{name:'Козлов Дмитрий Владимирович',rating:'4.7',exp:'7 лет',price:'1 900',reviews:74,emoji:'👨‍⚕️'}],
+  'невролог':[{name:'Федорова Ольга Петровна',rating:'5.0',exp:'18 лет',price:'2 500',reviews:341,emoji:'👩‍⚕️'},{name:'Михайлов Сергей Андреевич',rating:'4.8',exp:'12 лет',price:'2 200',reviews:156,emoji:'👨‍⚕️'}],
+  'офтальмолог':[{name:'Николаева Анна Владимировна',rating:'4.9',exp:'15 лет',price:'2 000',reviews:188,emoji:'👩‍⚕️'},{name:'Захаров Павел Игоревич',rating:'4.7',exp:'8 лет',price:'1 700',reviews:92,emoji:'👨‍⚕️'}],
+  'кардиолог':[{name:'Соколова Ирина Михайловна',rating:'4.9',exp:'20 лет',price:'3 000',reviews:412,emoji:'👩‍⚕️'},{name:'Волков Андрей Сергеевич',rating:'4.8',exp:'13 лет',price:'2 700',reviews:231,emoji:'👨‍⚕️'}],
+  'трихолог':[{name:'Белова Юлия Александровна',rating:'4.8',exp:'10 лет',price:'2 300',reviews:167,emoji:'👩‍⚕️'},{name:'Морозов Илья Константинович',rating:'4.6',exp:'6 лет',price:'2 000',reviews:58,emoji:'👨‍⚕️'}],
+  'психотерапевт':[{name:'Кузнецова Наталья Викторовна',rating:'4.9',exp:'16 лет',price:'3 500',reviews:289,emoji:'👩‍⚕️'},{name:'Попов Роман Игоревич',rating:'4.7',exp:'11 лет',price:'3 000',reviews:143,emoji:'👨‍⚕️'}],
+};
+
+const SYSTEM_PROMPT = `Ты Алиса — медицинский ассистент. Собираешь анамнез пациента.
+
+Пиши ТОЛЬКО свой следующий вопрос. Ничего больше.
+Один вопрос — одно сообщение. Никогда не задавай два вопроса сразу.
+Не пиши "Пользователь:", "Пациент:", "Ассистент:", номера вопросов, двоеточия в начале ответа.
+Любой жаргон принимай спокойно. В ANAMNEZ_DATA пиши формальный медицинский язык.
+
+Порядок: жалоба → длительность → характер → сопутствующее → аллергии → лекарства.
+
+После 6 ответов пациента добавь ТОЛЬКО это в самом конце:
+<ANAMNEZ_DATA>{"complaints":"...","history":"...","duration":"...","additional":"...","allergies":"...","area":"одно слово — специальность врача","icd10_code":"код МКБ-10 наиболее вероятного диагноза","icd10_name":"название диагноза по МКБ-10"}</ANAMNEZ_DATA>`;
+
+async function callYandexAI(userMessage) {
+  conversationHistory.push({ role:'user', text:userMessage });
+  const messages = [{ role:'system', text:SYSTEM_PROMPT }, ...conversationHistory];
+  try {
+    const response = await fetch('http://localhost:3000/api/alice', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages })
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const aiText = data.result?.alternatives?.[0]?.message?.text || '';
+
+    let clean = aiText
+      .replace(/<ANAMNEZ_DATA>.*?<\/ANAMNEZ_DATA>/s, '')
+      .replace(/\[TOOL_CALL_START\]|\[TOOL_CALL_END\]/g, '')
+      .replace(/^(Ассистент|Алиса|Пользователь|Пациент|Assistant|User)\s*:\s*/gim, '')
+      .replace(/^Вопрос\s*\d+[^а-яёА-ЯЁa-zA-Z]*/gim, '')
+      .replace(/Вопрос\s*\d+\s*(из\s*\d+)?\s*(задан\.?)?/gi, '')
+      .replace(/^\s*:\s*/gm, '')
+      .replace(/\n{3,}/g, '\n\n').trim();
+
+    // Keep only first question
+    const bySemicolon = clean.split(/\s:\s/);
+    if (bySemicolon.length > 1) clean = bySemicolon[0].trim();
+    const byNewQ = clean.split(/\?\s*\n/);
+    if (byNewQ.length > 1) clean = byNewQ[0].trim() + '?';
+
+    conversationHistory.push({ role:'assistant', text:aiText });
+    const match = aiText.match(/<ANAMNEZ_DATA>(.*?)<\/ANAMNEZ_DATA>/s);
+    if (match) { try { updateAnamnez(JSON.parse(match[1])); } catch(e){} }
+    return clean;
+  } catch(err) {
+    console.error('AI error:', err);
+    return getFallback(userMessage);
+  }
+}
+
+const fallbackFlow = ['Как давно появились эти симптомы?','Как бы вы оценили интенсивность — слабая, умеренная или сильная?','Есть ли другие симптомы — температура, слабость?','Есть ли аллергия на лекарства?','Принимаете ли сейчас препараты?','Спасибо, анамнез собран. Перехожу к специалисту.'];
+let fallbackIdx = 0;
+function getFallback(msg) {
+  const r = fallbackFlow[Math.min(fallbackIdx, fallbackFlow.length-1)]; fallbackIdx++;
+  if (fallbackIdx >= 3) updateAnamnez({ complaints:msg, history:'Со слов пациента', duration:'несколько дней', additional:'уточняется', allergies:'не выявлено', area:'терапевт' });
+  return r;
+}
+
+function updateAnamnez(data) {
+  const map = { complaints:'rf-complaints', history:'rf-history', duration:'rf-duration', additional:'rf-additional', allergies:'rf-allergies', area:'rf-area' };
+  Object.entries(map).forEach(([k,id]) => {
+    if (data[k]) { anamnezData[k]=data[k]; const el=document.getElementById(id); el.textContent=data[k]; el.classList.remove('empty'); }
+  });
+  // МКБ-10 классификация
+  if (data.icd10_code && data.icd10_name) {
+    anamnezData.icd10_code = data.icd10_code;
+    anamnezData.icd10_name = data.icd10_name;
+    const el = document.getElementById('rf-icd10');
+    if (el) {
+      el.classList.remove('empty');
+      el.innerHTML = `<span class="icd-badge">🏷️ ${data.icd10_code}</span> ${data.icd10_name}`;
+    }
+  }
+}
+
+function addBubble(text, isUser) {
+  const win = document.getElementById('chat-window');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble ' + (isUser ? 'chat-user' : 'chat-ai');
+  div.textContent = text;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function showTyping() {
+  const win = document.getElementById('chat-window');
+  const d = document.createElement('div');
+  d.id = 'typing-indicator'; d.className = 'ai-thinking';
+  d.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div> Алиса думает...';
+  win.appendChild(d); win.scrollTop = win.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById('typing-indicator'); if(t) t.remove(); }
+
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const btn = document.getElementById('send-btn');
+  const text = input.value.trim();
+  if (!text) return;
+  addBubble(text, true); input.value = '';
+  btn.classList.add('loading'); btn.disabled = true; showTyping();
+  const response = await callYandexAI(text);
+  removeTyping(); btn.classList.remove('loading'); btn.disabled = false;
+  addBubble(response, false);
+}
+function addSymptom(s) { document.getElementById('user-input').value = s; sendMessage(); }
+
+// MODULE 2
+function goToSpecialist() { buildSpecialists(); showModule(2); }
+
+async function buildSpecialists() {
+  const area = anamnezData.area || '';
+  const complaints = anamnezData.complaints || 'не указано';
+  document.getElementById('ai-rec-text').innerHTML =
+    `На основе анамнеза (<em>${complaints}</em>) Алиса рекомендует обратиться к <strong>${area || 'терапевту'}</strong>. Специалисты подобраны с сайта <strong>prodoctorov.ru/spb/vrach/</strong>`;
+  document.getElementById('specialists-loading').style.display = 'block';
+  document.getElementById('specialist-grid').innerHTML = '';
+  await new Promise(r => setTimeout(r, 1400));
+
+  const areaLower = area.toLowerCase();
+  let matched = [];
+  for (const [spec, docs] of Object.entries(SPECIALISTS_DB)) {
+    if (areaLower.includes(spec) || spec.includes(areaLower.split(' ')[0])) {
+      matched = matched.concat(docs.map(d => ({...d, specialty: spec})));
+    }
+  }
+  if (matched.length === 0) matched = SPECIALISTS_DB['терапевт'].map(d => ({...d, specialty:'терапевт'}));
+  if (!areaLower.includes('терапевт')) matched = matched.concat(SPECIALISTS_DB['терапевт'].map(d => ({...d, specialty:'терапевт'})));
+
+  document.getElementById('specialists-loading').style.display = 'none';
+  const grid = document.getElementById('specialist-grid');
+  matched.slice(0,4).forEach((doc, i) => {
+    const card = document.createElement('div');
+    card.className = 'spec-card' + (i===0?' recommended':'');
+    card.onclick = () => selectSpec(card);
+    card.innerHTML = `
+      <span class="spec-emoji">${doc.emoji}</span>
+      <div class="spec-top">
+        <div><div class="spec-name">${doc.name}</div><div class="spec-specialty">${doc.specialty.charAt(0).toUpperCase()+doc.specialty.slice(1)}</div></div>
+        ${i===0?'<span class="rec-badge">Рекомендован</span>':''}
+      </div>
+      <div class="spec-meta"><span>⭐ ${doc.rating}</span><span>${doc.exp} опыта</span><span>${doc.reviews} отзывов</span></div>
+      <div class="spec-price">от ${doc.price} ₽</div>
+      <a href="https://prodoctorov.ru/spb/vrach/" target="_blank" style="text-decoration:none;">
+        <button class="spec-btn">Записаться на prodoctorov.ru →</button>
+      </a>`;
+    grid.appendChild(card);
+  });
+}
+function selectSpec(el) { document.querySelectorAll('.spec-card').forEach(c=>c.classList.remove('recommended')); el.classList.add('recommended'); }
+
+// MODULE 3
+// 1. ПАРСИНГ ТРАНСКРИПТА
+async function parseConsultation() {
+  const btn = document.querySelector('button[onclick="parseConsultation()"]');
+  const originalBtnText = btn.innerHTML;
+  
+  // Показываем загрузку на кнопке
+  btn.innerHTML = '<span class="spinner" style="display:inline-block;margin-right:8px;"></span> Алиса формирует отчёт...';
+  btn.style.background = 'var(--gray-dark)';
+  btn.disabled = true;
+
+  const indicator = document.getElementById('transcribing-indicator');
+  if (indicator) indicator.style.display = 'flex';
+
+  const transcriptText = document.getElementById('transcript-box').innerText;
+  
+  // Строгий промпт, приближенный к форме 025/у
+  const parsePrompt = `На основе записи консультации составь медицинский отчёт пациента (аналог формы 025/у).
+Верни ТОЛЬКО валидный JSON (без markdown, без слов "вот ваш отчет"):
+{
+  "complaints": "жалобы пациента",
+  "diagnosis_code": "код по МКБ-10 (одно значение)",
+  "diagnosis_name": "диагноз основного заболевания",
+  "prescriptions": ["Лекарство 1 — доза", "Лекарство 2 — доза"],
+  "tests": ["Название исследования 1", "Название исследования 2"]
+}
+
+Запись консультации:
+${transcriptText}`;
+
+  try {
+    const response = await fetch('http://localhost:3000/api/alice', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages:[{ role:'user', text:parsePrompt }] })
+    });
+    const data = await response.json();
+    let text = data.result?.alternatives?.[0]?.message?.text || '';
+    
+    // Агрессивная очистка JSON: находим первую { и последнюю }
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1) {
+      text = text.substring(firstBrace, lastBrace + 1);
+    }
+    
+    medicalReport = JSON.parse(text);
+  } catch(e) {
+    console.error('Ошибка парсинга ответа ИИ, используем резервные данные:', e);
+    // Данные по умолчанию (если сервер не ответил)
+    medicalReport = {
+      complaints: anamnezData.complaints || 'Жалобы на головную боль, плохой сон.',
+      diagnosis_code: 'G44.2',
+      diagnosis_name: 'Головная боль напряжения',
+      prescriptions: ['Магне B6 — 2 таб. 2 р/д, 30 дней', 'Мелатонин 3 мг — 1 таб. на ночь'],
+      tests: ['Магний сыворотки крови', '25-OH витамин D']
+    };
+  }
+
+  if (indicator) indicator.style.display = 'none';
+  btn.innerHTML = originalBtnText;
+  btn.style.background = '';
+  btn.disabled = false;
+
+  // ВАЖНО: Сначала переключаем интерфейс на 4 шаг!
+  showModule(4);
+  
+  // Прокручиваем страницу наверх карточки отчета
+  setTimeout(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}, 800);
+
+  // Запускаем заполнение отчета
+  await fillReport();
+}
+
+// 2. ЗАПОЛНЕНИЕ ОТЧЕТА В ИНТЕРФЕЙСЕ
+async function fillReport() {
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
+  const setField = async (id, text) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove('empty');
+    el.style.transition = 'background 0.3s ease';
+    el.style.background = 'var(--yellow-light)';
+    await delay(400);
+    el.style.background = 'var(--white)';
+  };
+
+  const setHTML = (id, html) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = html;
+    el.classList.remove('empty');
+  };
+
+  // Дата и врач
+  const today = new Date().toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric'});
+  setHTML('rep-date', today);
+  setHTML('rep-doctor', anamnezData.area ? `${anamnezData.area.charAt(0).toUpperCase()+anamnezData.area.slice(1)}` : 'Терапевт');
+
+  await delay(300);
+  await setField('rep-complaints', medicalReport.complaints || anamnezData.complaints);
+  await setField('rep-anamnez', anamnezData.history || 'Со слов пациента. Длительность: ' + (anamnezData.duration || 'не уточнена'));
+  await setField('rep-objective', 'Состояние удовлетворительное. Данные получены в ходе телеконсультации.');
+  await setField('rep-diagnosis', `${medicalReport.diagnosis_code || anamnezData.icd10_code || '—'} — ${medicalReport.diagnosis_name || anamnezData.icd10_name || 'уточняется'}`);
+  await setField('rep-comorbidity', anamnezData.additional || 'не выявлено');
+  await setField('rep-prescriptions', (medicalReport.prescriptions||[]).join(';\n') || 'не назначено');
+  await setField('rep-tests', (medicalReport.tests||[]).join(', ') || 'не назначено');
+  setHTML('rep-health-group', 'II · Диспансерное наблюдение: нет');
+
+  // Карточки препаратов
+  const medsEl = document.getElementById('medications-container');
+  if (medsEl) {
+    medsEl.innerHTML = (medicalReport.prescriptions||[]).map(p => {
+      const parts = p.split('—'); const name=parts[0]?.trim(); const dose=parts[1]?.trim()||'';
+      return `<div class="med-card"><div class="med-header"><div><div class="med-name">${name}</div><div class="med-type">${dose}</div></div><span class="med-badge supplement">Назначение</span></div></div>`;
+    }).join('') || '<div style="color:var(--gray-soft);font-size:13px;">Препараты не назначены</div>';
+  }
+
+  // Карточки анализов
+  const testsEl = document.getElementById('tests-container');
+  if (testsEl) {
+    testsEl.innerHTML = (medicalReport.tests||[]).map(t =>
+      `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px;background:var(--white);border:1px solid var(--gray-border);border-radius:6px;margin-bottom:6px;font-size:13px;"><span>${t}</span><span style="font-size:11px;color:var(--red);font-weight:600;">Сдать ↑</span></div>`
+    ).join('') || '<div style="color:var(--gray-soft);font-size:13px;">Исследования не назначены</div>';
+  }
+
+  await generateRecs();
+}
+
+// 3. ГЕНЕРАЦИЯ РЕКОМЕНДАЦИЙ
+async function generateRecs() {
+  const el = document.getElementById('alice-recs-output');
+  if (!el) return;
+
+  el.textContent = 'Алиса анализирует форму 025/у и формирует выводы...';
+  el.style.color = 'var(--gray-soft)';
+  el.style.fontStyle = 'italic';
+
+  const prompt = `На основе медицинского отчёта дай 3 коротких практических совета пациенту.
+Формат: каждый пункт с emoji в начале. Без воды и вступлений.
+Диагноз: ${medicalReport.diagnosis_name}.
+Назначения: ${(medicalReport.prescriptions||[]).join(', ')}.`;
+
+  try {
+    const response = await fetch('http://localhost:3000/api/alice', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages:[{ role:'user', text:prompt }] })
+    });
+    const data = await response.json();
+    let text = data.result?.alternatives?.[0]?.message?.text || '';
+    
+    text = text.trim();
+    if (!text) throw new Error('Пустой ответ');
+
+    // Безопасный вывод с сохранением переносов строк
+    el.style.whiteSpace = 'pre-wrap';
+    el.textContent = text;
+    el.style.color = 'var(--black)';
+    el.style.fontStyle = 'normal';
+
+  } catch(e) {
+    console.error('Ошибка ИИ:', e);
+    el.style.whiteSpace = 'pre-wrap';
+    el.textContent = '🌙 Соблюдайте режим сна и отдыха.\n💊 Принимайте препараты строго по указанной схеме.\n🔬 Сдайте анализы натощак в утренние часы.';
+    el.style.color = 'var(--black)';
+    el.style.fontStyle = 'normal';
+  }
+}
+// NAVIGATION
+function showModule(num) {
+  // Скрываем все панели
+  document.querySelectorAll('.module-panel').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  // Показываем нужную панель принудительно
+  const panel = document.getElementById('module-' + num);
+  panel.classList.add('active');
+  panel.style.display = 'block';
+
+  document.querySelectorAll('.tab-btn')[num - 1].classList.add('active');
+
+  const labels = ['','Сбор анамнеза','Выбор специалиста','Консультация','Рекомендации'];
+  document.getElementById('current-step-label').textContent = labels[num];
+
+  for(let i = 1; i <= 4; i++){
+    const dot = document.getElementById('sd'+i);
+    const line = document.getElementById('sl'+i);
+    if(i < num){ dot.className='step-dot done'; dot.textContent='✓'; }
+    else if(i === num){ dot.className='step-dot active'; dot.textContent=i; }
+    else{ dot.className='step-dot todo'; dot.textContent=i; }
+    if(line) line.className = 'step-line' + (i < num ? ' done' : '');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function scrollToModules() { document.getElementById('modules').scrollIntoView({behavior:'smooth'}); }
+
+// ——— SPEECHKIT: загрузка и распознавание аудио ———
+function handleAudioDrop(event) {
+  event.preventDefault();
+  const zone = document.getElementById('audio-drop-zone');
+  zone.style.borderColor = 'var(--gray-border)';
+  zone.style.background = '';
+  const file = event.dataTransfer.files[0];
+  if (file) handleAudioFile(file);
+}
+
+async function handleAudioFile(file) {
+  if (!file) return;
+
+  const status = document.getElementById('stt-status');
+  const statusText = document.getElementById('stt-status-text');
+
+  // Показываем статус
+  status.style.display = 'block';
+  status.style.background = 'var(--yellow-light)';
+  status.style.border = '1px solid var(--yellow-dark)';
+  status.style.color = 'var(--gray-dark)';
+  statusText.textContent = `Загружаю "${file.name}"...`;
+
+  // Определяем формат для SpeechKit
+  const ext = file.name.split('.').pop().toLowerCase();
+  const formatMap = { ogg: 'oggopus', oga: 'oggopus', opus: 'oggopus', mp3: 'mp3', wav: 'lpcm' };
+  const format = formatMap[ext] || 'mp3';
+
+  statusText.textContent = '🎙️ Алиса распознаёт речь...';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+
+    const response = await fetch(`http://localhost:3000/api/speechkit?format=${format}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: arrayBuffer
+    });
+
+    const data = await response.json();
+    console.log('SpeechKit result:', data);
+
+    if (data.result) {
+      const recognizedText = data.result;
+
+      // Успех — зелёный статус
+      status.style.background = '#f0fff4';
+      status.style.border = '1px solid #4CAF50';
+      status.style.color = '#2e7d32';
+      statusText.textContent = `✅ Распознано: "${recognizedText}"`;
+
+      // Добавляем в транскрипт
+      const box = document.getElementById('transcript-box');
+      const line = document.createElement('div');
+      line.className = 'transcript-line';
+      line.innerHTML = `
+        <div class="transcript-speaker patient">Пациент (из аудио 🎙️)</div>
+        <div class="transcript-text" style="background:var(--yellow-light);padding:6px 10px;border-radius:6px;border-left:3px solid var(--yellow-dark);">${recognizedText}</div>`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+
+      // Скрываем спиннер, показываем кнопку
+      //document.getElementById('stt-spinner').style.display = 'none';
+      setTimeout(() => {
+        statusText.textContent = '✅ Готово! Нажмите «Сформировать отчёт» ниже.';
+      }, 1500);
+
+    } else {
+      // Ошибка распознавания
+      status.style.background = 'var(--red-light)';
+      status.style.border = '1px solid var(--red)';
+      status.style.color = 'var(--red-dark)';
+      const errMsg = data.error_message || data.message || JSON.stringify(data);
+      statusText.textContent = `⚠️ Не удалось распознать. Ответ сервера: ${errMsg}`;
+      console.error('SpeechKit error response:', data);
+    }
+
+  } catch(err) {
+    status.style.background = 'var(--red-light)';
+    status.style.border = '1px solid var(--red)';
+    status.style.color = 'var(--red-dark)';
+    statusText.textContent = `❌ Ошибка: ${err.message}`;
+    console.error('SpeechKit fetch error:', err);
+  }
+}
+
+function downloadReport() {
+  // Показываем только форму 025/у и печатаем
+  window.print();
+}
+</script>
+</body>
+</html>

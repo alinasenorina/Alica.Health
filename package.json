@@ -1,0 +1,9 @@
+{
+  "name": "alice-health-ai",
+  "version": "1.0.0",
+  "description": "Медицинский ИИ-ассистент",
+  "main": "server.js",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
